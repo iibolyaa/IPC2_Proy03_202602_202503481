@@ -1,0 +1,19 @@
+<CodeBlock language="gitignore"># Compilacion de .NET
+**/bin/
+**/obj/
+
+.vs/
+*.user
+*.suo
+.vscode/
+
+Backend/Datos/*
+!Backend/Datos/.gitkeep
+
+**/appsettings.Development.json
+
+*.tmp
+*.log
+
+Thumbs.db
+.DS_Store</CodeBlock>
