@@ -1,24 +1,19 @@
+using Backend.Ayuda;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Registrar una sola instancia del estado del sistema.
+builder.Services.AddSingleton<EstadoSistema>(servicios =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    string carpetaBackend = builder.Environment.ContentRootPath;
 
-app.UseHttpsRedirection();
+    return new EstadoSistema(carpetaBackend);
+});
 
-app.UseAuthorization();
+// Configurar la aplicacion.
+var app = builder.Build();
 
 app.MapControllers();
 
