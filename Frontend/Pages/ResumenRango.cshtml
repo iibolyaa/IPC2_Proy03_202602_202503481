@@ -1,0 +1,188 @@
+@page
+@model Frontend.Pages.ResumenIvaModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Resumen de IVA";
+}
+
+<section class="encabezado-pagina">
+    <h1>Resumen de IVA</h1>
+
+    <p>
+        Consulta el IVA emitido y recibido por cada
+        contribuyente en una fecha determinada.
+    </p>
+</section>
+
+<section class="panel">
+
+    <h2>Seleccionar fecha</h2>
+
+    <form method="post">
+
+        <div class="formulario-grupo">
+            <label asp-for="Fecha">
+                Fecha de consulta
+            </label>
+
+            <input asp-for="Fecha"
+                   type="date"
+                   asp-format="{0:yyyy-MM-dd}"
+                   class="campo"
+                   required />
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit"
+                    class="boton boton-principal">
+                Consultar resumen de IVA
+            </button>
+
+            <a asp-page="/ResumenIva"
+               class="boton boton-secundario">
+                Limpiar
+            </a>
+        </div>
+
+    </form>
+
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+{
+    <section class="mensaje-alerta mensaje-error"
+             role="alert">
+        <strong>No se pudo realizar la consulta</strong>
+        <p>@Model.MensajeError</p>
+    </section>
+}
+
+@if (Model.MostrarResultados)
+{
+    <section class="resultados-consulta">
+
+        <div class="seccion-encabezado">
+            <h2>Resultados del resumen</h2>
+
+            <p>
+                Fecha consultada:
+                @Model.Fecha?.ToString("dd/MM/yyyy")
+            </p>
+        </div>
+
+        <div class="resumen-tarjetas">
+
+            <article class="resumen-tarjeta">
+                <span>Total IVA emitido</span>
+
+                <strong>
+                    Q @Model.TotalIvaEmitido.ToString("N2")
+                </strong>
+            </article>
+
+            <article class="resumen-tarjeta">
+                <span>Total IVA recibido</span>
+
+                <strong>
+                    Q @Model.TotalIvaRecibido.ToString("N2")
+                </strong>
+            </article>
+
+        </div>
+
+        <section class="panel">
+
+            <h2>Detalle por contribuyente</h2>
+
+            <p class="texto-ayuda">
+                Contribuyentes con movimientos
+                de DTE autorizados.
+            </p>
+
+            <div class="tabla-contenedor">
+                <table class="tabla">
+
+                    <thead>
+                        <tr>
+                            <th>NIT</th>
+                            <th>IVA emitido</th>
+                            <th>IVA recibido</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            using JsonDocument documento =
+                                JsonDocument.Parse(
+                                    Model.RespuestaJson
+                                );
+
+                            JsonElement detalle =
+                                documento.RootElement
+                                    .GetProperty("detalle");
+                        }
+
+                        @foreach (JsonElement registro
+                            in detalle.EnumerateArray())
+                        {
+                            string nit =
+                                registro.GetProperty("nit")
+                                    .GetString() ?? "";
+
+                            decimal emitido =
+                                registro.GetProperty("ivaEmitido")
+                                    .GetDecimal();
+
+                            decimal recibido =
+                                registro.GetProperty("ivaRecibido")
+                                    .GetDecimal();
+
+                            <tr>
+                                <td>@nit</td>
+
+                                <td>
+                                    Q @emitido.ToString("N2")
+                                </td>
+
+                                <td>
+                                    Q @recibido.ToString("N2")
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.CantidadContribuyentes == 0)
+                        {
+                            <tr>
+                                <td colspan="3"
+                                    class="sin-resultados">
+                                    No existen movimientos
+                                    autorizados para esta fecha.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th>Total del dia</th>
+
+                            <th>
+                                Q @Model.TotalIvaEmitido.ToString("N2")
+                            </th>
+
+                            <th>
+                                Q @Model.TotalIvaRecibido.ToString("N2")
+                            </th>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+
+        </section>
+
+    </section>
+}

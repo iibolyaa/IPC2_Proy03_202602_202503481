@@ -1061,3 +1061,69 @@ a {
         font-size: 24px;
     }
 }
+
+/* ======================================
+   RESUMEN DE IVA
+====================================== */
+
+.resumen-tarjetas .resumen-tarjeta:first-child {
+    background: #EDF7BD;
+    border-color: #85C79A;
+}
+
+.resumen-tarjetas .resumen-tarjeta:last-child {
+    background: #85C79A;
+    border-color: #4E8D9C;
+}
+
+.resumen-tarjetas .resumen-tarjeta strong {
+    color: #281C59;
+}
+
+.tabla td,
+.tabla th {
+    vertical-align: middle;
+}
+
+.tabla tbody td:nth-child(2),
+.tabla tbody td:nth-child(3) {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ======================================
+   RESUMEN POR RANGO DE FECHAS
+====================================== */
+
+.resultados-consulta .seccion-encabezado {
+    margin-bottom: 22px;
+}
+
+.resultados-consulta .seccion-encabezado p {
+    margin: 5px 0;
+    color: #4E8D9C;
+}
+
+.resultados-consulta .resumen-tarjeta {
+    border: 1px solid #85C79A;
+}
+
+.resultados-consulta .resumen-tarjeta:first-child {
+    background: #EDF7BD;
+}
+
+.resultados-consulta .resumen-tarjeta:last-child {
+    background: #85C79A;
+}
+
+.resultados-consulta .resumen-tarjeta strong {
+    color: #281C59;
+}
+
+.resultados-consulta .tabla tfoot th {
+    background: #85C79A;
+    color: #281C59;
+}
+
+.resultados-consulta .tabla tbody tr:hover {
+    background: #EDF7BD;
+}
