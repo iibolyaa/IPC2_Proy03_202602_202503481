@@ -1,4 +1,3 @@
-
 @page
 @model Frontend.Pages.ConsultarContribuyenteModel
 @using System.Text.Json
@@ -126,6 +125,22 @@
                     : "Documentos recibidos")
             </p>
         </div>
+
+        
+        <div class="acciones-formulario">
+            <a asp-page="/ReportePdf"
+            asp-route-clase="contribuyente"
+            asp-route-nit="@Model.Nit"
+            asp-route-tipodocumento="@Model.Tipo"
+            asp-route-inicio="@Model.FechaInicio?.ToString("dd/MM/yyyy")"
+            asp-route-fin="@Model.FechaFin?.ToString("dd/MM/yyyy")"
+            target="_blank"
+            rel="noopener"
+            class="boton boton-principal">
+            Exportar PDF
+            </a>
+        </div>
+
 
         <div class="resumen-tarjetas">
 

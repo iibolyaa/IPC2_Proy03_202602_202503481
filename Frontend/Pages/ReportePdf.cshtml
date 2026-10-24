@@ -1,0 +1,455 @@
+@page
+@model Frontend.Pages.ReportePdfModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Reporte PDF";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@Model.TituloReporte - Sistema DTE</title>
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #EDF7BD;
+            color: #281C59;
+            font-family: Arial, sans-serif;
+        }
+
+        .hoja-reporte {
+            max-width: 950px;
+            min-height: 600px;
+            margin: auto;
+            padding: 35px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .encabezado-reporte {
+            background: #281C59;
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .encabezado-reporte h1 {
+            margin: 0 0 10px;
+            font-size: 25px;
+            color: white;
+        }
+
+        .encabezado-reporte p {
+            color: #EDF7BD;
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+
+        .datos-reporte {
+            border-left: 5px solid #85C79A;
+            padding: 12px 18px;
+            background: #EDF7BD;
+            margin-bottom: 25px;
+        }
+
+        .datos-reporte p {
+            margin: 7px 0;
+        }
+
+        .tabla-reporte {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .tabla-reporte th {
+            background: #4E8D9C;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .tabla-reporte td {
+            padding: 11px 12px;
+            border-bottom: 1px solid #85C79A;
+        }
+
+        .tabla-reporte tfoot th {
+            background: #85C79A;
+            color: #281C59;
+        }
+
+        .resumen-reporte {
+            margin-top: 25px;
+            padding: 18px;
+            border: 1px solid #85C79A;
+            background: #EDF7BD;
+            border-radius: 7px;
+        }
+
+        .resumen-reporte p {
+            margin: 8px 0;
+        }
+
+        .pie-reporte {
+            margin-top: 35px;
+            padding-top: 12px;
+            border-top: 1px solid #4E8D9C;
+            font-size: 11px;
+            color: #281C59;
+            text-align: center;
+        }
+
+        .acciones-reporte {
+            max-width: 950px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .acciones-reporte button,
+        .acciones-reporte a {
+            border: none;
+            border-radius: 8px;
+            padding: 13px 22px;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .acciones-reporte button {
+            background: #281C59;
+            color: white;
+        }
+
+        .acciones-reporte a {
+            background: #85C79A;
+            color: #281C59;
+        }
+
+        @@page {
+            size: letter;
+            margin: 15mm;
+        }
+
+        @@media print {
+            body {
+                background: white;
+                padding: 0;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .hoja-reporte {
+                max-width: none;
+                min-height: 0;
+                padding: 0;
+                border-radius: 0;
+            }
+
+            .acciones-reporte {
+                display: none !important;
+            }
+
+            .tabla-reporte thead {
+                display: table-header-group;
+            }
+
+            .tabla-reporte tr {
+                break-inside: avoid;
+            }
+
+            .encabezado-reporte,
+            .datos-reporte,
+            .resumen-reporte {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+    {
+        <section class="hoja-reporte">
+            <h1>No se pudo generar el reporte</h1>
+            <p>@Model.MensajeError</p>
+
+            <a href="javascript:history.back()">
+                Regresar
+            </a>
+        </section>
+    }
+    else if (Model.MostrarReporte)
+    {
+        <div class="acciones-reporte">
+
+            <a href="javascript:history.back()">
+                Regresar
+            </a>
+
+            <button type="button"
+                    onclick="window.print()">
+                Guardar como PDF
+            </button>
+
+        </div>
+
+        <article class="hoja-reporte">
+
+            <header class="encabezado-reporte">
+                <h1>Sistema de Autorizacion DTE</h1>
+
+                <p>
+                    Universidad de San Carlos de Guatemala
+                </p>
+
+                <p>
+                    Introduccion a la Programacion
+                    y Computacion 2
+                </p>
+
+                <p>
+                    Proyecto 3 - Reporte tributario
+                </p>
+            </header>
+
+            <section class="datos-reporte">
+                <h2>@Model.TituloReporte</h2>
+
+                <p>@Model.DescripcionReporte</p>
+
+                <p>
+                    <strong>Fecha de generacion:</strong>
+                    @Model.FechaGeneracion
+                </p>
+            </section>
+
+            @if (Model.Clase == "contribuyente")
+            {
+                <h3>Documentos por fecha</h3>
+
+                <table class="tabla-reporte">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cantidad DTE</th>
+                            <th>Monto total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @using (JsonDocument documento =
+                            JsonDocument.Parse(Model.RespuestaJson))
+                        {
+                            JsonElement detalle =
+                                documento.RootElement
+                                    .GetProperty("detalle");
+
+                            foreach (JsonElement registro in
+                                detalle.EnumerateArray())
+                            {
+                                string fecha = registro
+                                    .GetProperty("fecha")
+                                    .GetString() ?? "";
+
+                                int cantidad = registro
+                                    .GetProperty("cantidadDTE")
+                                    .GetInt32();
+
+                                decimal monto = registro
+                                    .GetProperty("montoTotal")
+                                    .GetDecimal();
+
+                                <tr>
+                                    <td>@fecha</td>
+                                    <td>@cantidad</td>
+                                    <td>Q @monto.ToString("N2")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th>Total del periodo</th>
+                            <th>@Model.CantidadDTE</th>
+                            <th>Q @Model.MontoTotal.ToString("N2")</th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                @if (Model.CantidadDTE == 0)
+                {
+                    <p>No existen DTE autorizados para esta consulta.</p>
+                }
+            }
+            else if (Model.Clase == "iva")
+            {
+                <h3>IVA emitido y recibido por NIT</h3>
+
+                <table class="tabla-reporte">
+                    <thead>
+                        <tr>
+                            <th>NIT</th>
+                            <th>IVA emitido</th>
+                            <th>IVA recibido</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @using (JsonDocument documento =
+                            JsonDocument.Parse(Model.RespuestaJson))
+                        {
+                            JsonElement detalle =
+                                documento.RootElement
+                                    .GetProperty("detalle");
+
+                            foreach (JsonElement registro in
+                                detalle.EnumerateArray())
+                            {
+                                string nit = registro
+                                    .GetProperty("nit")
+                                    .GetString() ?? "";
+
+                                decimal emitido = registro
+                                    .GetProperty("ivaEmitido")
+                                    .GetDecimal();
+
+                                decimal recibido = registro
+                                    .GetProperty("ivaRecibido")
+                                    .GetDecimal();
+
+                                <tr>
+                                    <td>@nit</td>
+                                    <td>Q @emitido.ToString("N2")</td>
+                                    <td>Q @recibido.ToString("N2")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th>Total del dia</th>
+                            <th>
+                                Q @Model.TotalIvaEmitido.ToString("N2")
+                            </th>
+                            <th>
+                                Q @Model.TotalIvaRecibido.ToString("N2")
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            }
+            else if (Model.Clase == "rango")
+            {
+                <h3>Montos autorizados por fecha</h3>
+
+                <table class="tabla-reporte">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cantidad DTE</th>
+                            <th>Monto autorizado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @using (JsonDocument documento =
+                            JsonDocument.Parse(Model.RespuestaJson))
+                        {
+                            JsonElement detalle =
+                                documento.RootElement
+                                    .GetProperty("detalle");
+
+                            foreach (JsonElement registro in
+                                detalle.EnumerateArray())
+                            {
+                                string fecha = registro
+                                    .GetProperty("fecha")
+                                    .GetString() ?? "";
+
+                                int cantidad = registro
+                                    .GetProperty("cantidadDTE")
+                                    .GetInt32();
+
+                                decimal monto = registro
+                                    .GetProperty("monto")
+                                    .GetDecimal();
+
+                                <tr>
+                                    <td>@fecha</td>
+                                    <td>@cantidad</td>
+                                    <td>Q @monto.ToString("N2")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th>Total del periodo</th>
+                            <th>@Model.CantidadDTE</th>
+                            <th>Q @Model.MontoTotal.ToString("N2")</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            }
+
+            <section class="resumen-reporte">
+                <h3>Resumen general</h3>
+
+                @if (Model.Clase == "iva")
+                {
+                    <p>
+                        <strong>IVA emitido:</strong>
+                        Q @Model.TotalIvaEmitido.ToString("N2")
+                    </p>
+
+                    <p>
+                        <strong>IVA recibido:</strong>
+                        Q @Model.TotalIvaRecibido.ToString("N2")
+                    </p>
+                }
+                else
+                {
+                    <p>
+                        <strong>Documentos autorizados:</strong>
+                        @Model.CantidadDTE
+                    </p>
+
+                    <p>
+                        <strong>Monto acumulado:</strong>
+                        Q @Model.MontoTotal.ToString("N2")
+                    </p>
+                }
+            </section>
+
+            <footer class="pie-reporte">
+                Sistema DTE - IPC2 - USAC
+                | Reporte generado desde la aplicacion web
+            </footer>
+
+        </article>
+    }
+
+</body>
+</html>
