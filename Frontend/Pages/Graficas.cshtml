@@ -1,0 +1,327 @@
+
+@page
+@model Frontend.Pages.GraficasModel
+@using System.Text.Json
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Graficas";
+}
+
+<section class="encabezado-pagina">
+    <h1>Graficas de movimientos tributarios</h1>
+    <p>
+        Visualiza el IVA emitido y recibido por NIT,
+        o los montos autorizados por rango de fechas.
+    </p>
+</section>
+
+<section class="panel">
+    <h2>Configurar grafica</h2>
+
+    <form method="post">
+
+        <div class="formulario-grupo">
+            <label asp-for="TipoGrafica">
+                Tipo de grafica
+            </label>
+
+            <select asp-for="TipoGrafica"
+                    class="campo"
+                    id="tipoGrafica">
+                <option value="iva">
+                    Resumen de IVA por NIT
+                </option>
+
+                <option value="rango">
+                    Montos por rango de fechas
+                </option>
+            </select>
+        </div>
+
+        <div id="filtroIva">
+            <div class="formulario-grupo">
+                <label asp-for="Fecha">
+                    Fecha de consulta
+                </label>
+
+                <input asp-for="Fecha"
+                       type="date"
+                       asp-format="{0:yyyy-MM-dd}"
+                       class="campo" />
+            </div>
+        </div>
+
+        <div id="filtroRango">
+
+            <div class="consulta-fechas">
+
+                <div class="formulario-grupo">
+                    <label asp-for="FechaInicio">
+                        Fecha inicial
+                    </label>
+
+                    <input asp-for="FechaInicio"
+                           type="date"
+                           asp-format="{0:yyyy-MM-dd}"
+                           class="campo" />
+                </div>
+
+                <div class="formulario-grupo">
+                    <label asp-for="FechaFin">
+                        Fecha final
+                    </label>
+
+                    <input asp-for="FechaFin"
+                           type="date"
+                           asp-format="{0:yyyy-MM-dd}"
+                           class="campo" />
+                </div>
+
+            </div>
+
+            <div class="formulario-grupo">
+                <label asp-for="TipoMonto">
+                    Valores a visualizar
+                </label>
+
+                <select asp-for="TipoMonto"
+                        class="campo">
+                    <option value="total">
+                        Valores totales (con IVA)
+                    </option>
+                    <option value="siniva">
+                        Valores sin IVA
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit"
+                    class="boton boton-principal">
+                Generar grafica
+            </button>
+
+            <a asp-page="/Graficas"
+               class="boton boton-secundario">
+                Limpiar
+            </a>
+        </div>
+
+    </form>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+{
+    <section class="mensaje-alerta mensaje-error"
+             role="alert">
+        <strong>No se pudo generar la grafica</strong>
+        <p>@Model.MensajeError</p>
+    </section>
+}
+
+@if (Model.MostrarGrafica)
+{
+    <section class="panel">
+
+        @if (Model.TipoGrafica == "iva")
+        {
+            <h2>IVA emitido y recibido por NIT</h2>
+
+            <p class="texto-ayuda">
+                Fecha:
+                @Model.Fecha?.ToString("dd/MM/yyyy")
+            </p>
+
+            <div class="leyenda-grafica">
+                <span>
+                    <i class="leyenda-emitido"></i>
+                    IVA emitido
+                </span>
+                <span>
+                    <i class="leyenda-recibido"></i>
+                    IVA recibido
+                </span>
+            </div>
+
+            <div class="grafica-barras">
+
+                @using (JsonDocument documento =
+                    JsonDocument.Parse(Model.RespuestaJson))
+                {
+                    JsonElement detalle =
+                        documento.RootElement
+                            .GetProperty("detalle");
+
+                    foreach (JsonElement registro in
+                        detalle.EnumerateArray())
+                    {
+                        string nit = registro
+                            .GetProperty("nit")
+                            .GetString() ?? "";
+
+                        decimal emitido = registro
+                            .GetProperty("ivaEmitido")
+                            .GetDecimal();
+
+                        decimal recibido = registro
+                            .GetProperty("ivaRecibido")
+                            .GetDecimal();
+
+                        decimal anchoEmitido =
+                            Model.ValorMaximo > 0
+                            ? emitido / Model.ValorMaximo * 100m
+                            : 0m;
+
+                        decimal anchoRecibido =
+                            Model.ValorMaximo > 0
+                            ? recibido / Model.ValorMaximo * 100m
+                            : 0m;
+
+                        <div class="grafica-registro">
+                            <strong>NIT: @nit</strong>
+
+                            <div class="grafica-fila">
+                                <span>Emitido</span>
+                                <div class="grafica-pista">
+                                    <div class="grafica-barra grafica-emitido"
+                                         style="width:@(anchoEmitido.ToString("0.##", CultureInfo.InvariantCulture))%">
+                                    </div>
+                                </div>
+                                <span>Q @emitido.ToString("N2")</span>
+                            </div>
+
+                            <div class="grafica-fila">
+                                <span>Recibido</span>
+                                <div class="grafica-pista">
+                                    <div class="grafica-barra grafica-recibido"
+                                         style="width:@(anchoRecibido.ToString("0.##", CultureInfo.InvariantCulture))%">
+                                    </div>
+                                </div>
+                                <span>Q @recibido.ToString("N2")</span>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+
+            <div class="resumen-tarjetas">
+                <article class="resumen-tarjeta">
+                    <span>Total IVA emitido</span>
+                    <strong>
+                        Q @Model.TotalEmitido.ToString("N2")
+                    </strong>
+                </article>
+
+                <article class="resumen-tarjeta">
+                    <span>Total IVA recibido</span>
+                    <strong>
+                        Q @Model.TotalRecibido.ToString("N2")
+                    </strong>
+                </article>
+            </div>
+        }
+        else
+        {
+            <h2>Montos autorizados por fecha</h2>
+
+            <p class="texto-ayuda">
+                @Model.FechaInicio?.ToString("dd/MM/yyyy")
+                al
+                @Model.FechaFin?.ToString("dd/MM/yyyy")
+                —
+                @(Model.TipoMonto == "total"
+                    ? "Con IVA"
+                    : "Sin IVA")
+            </p>
+
+            <div class="grafica-barras">
+
+                @using (JsonDocument documento =
+                    JsonDocument.Parse(Model.RespuestaJson))
+                {
+                    JsonElement detalle =
+                        documento.RootElement
+                            .GetProperty("detalle");
+
+                    foreach (JsonElement registro in
+                        detalle.EnumerateArray())
+                    {
+                        string fecha = registro
+                            .GetProperty("fecha")
+                            .GetString() ?? "";
+
+                        decimal monto = registro
+                            .GetProperty("monto")
+                            .GetDecimal();
+
+                        decimal ancho =
+                            Model.ValorMaximo > 0
+                            ? monto / Model.ValorMaximo * 100m
+                            : 0m;
+
+                        <div class="grafica-registro">
+                            <strong>@fecha</strong>
+
+                            <div class="grafica-fila">
+                                <span>Monto</span>
+
+                                <div class="grafica-pista">
+                                    <div class="grafica-barra grafica-monto"
+                                         style="width:@(ancho.ToString("0.##", CultureInfo.InvariantCulture))%">
+                                    </div>
+                                </div>
+
+                                <span>
+                                    Q @monto.ToString("N2")
+                                </span>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+
+            <div class="resumen-tarjetas">
+                <article class="resumen-tarjeta">
+                    <span>Monto total autorizado</span>
+                    <strong>
+                        Q @Model.MontoTotal.ToString("N2")
+                    </strong>
+                </article>
+            </div>
+        }
+
+        @if (Model.CantidadRegistros == 0)
+        {
+            <p class="sin-resultados">
+                No existen movimientos autorizados
+                para los filtros seleccionados.
+            </p>
+        }
+
+    </section>
+}
+
+@section Scripts {
+<script>
+    (function () {
+        const selector = document.getElementById("tipoGrafica");
+        const filtroIva = document.getElementById("filtroIva");
+        const filtroRango = document.getElementById("filtroRango");
+
+        function actualizarFiltros() {
+            const esIva = selector.value === "iva";
+
+            filtroIva.hidden = !esIva;
+            filtroRango.hidden = esIva;
+        }
+
+        selector.addEventListener("change", actualizarFiltros);
+        actualizarFiltros();
+    })();
+</script>
+}
