@@ -25,7 +25,7 @@ namespace Backend.Ayuda
 
                 for (int i = 0; i < estado.Documentos.ObtenerCantidad(); i++)
                 {
-                    DTE? dte = estado.Documentos.ObtenerPorIndice(i);
+                    Factura? dte = estado.Documentos.ObtenerPorIndice(i);
 
                     if (dte == null || !dte.Autorizada)
                     {
@@ -59,7 +59,7 @@ namespace Backend.Ayuda
 
                 for (int i = 0; i < estado.Documentos.ObtenerCantidad(); i++)
                 {
-                    DTE? dte = estado.Documentos.ObtenerPorIndice(i);
+                    Factura? dte = estado.Documentos.ObtenerPorIndice(i);
 
                     if (dte == null || !dte.Autorizada)
                     {
@@ -90,7 +90,7 @@ namespace Backend.Ayuda
 
                 for (int i = 0; i < estado.Documentos.ObtenerCantidad(); i++)
                 {
-                    DTE? dte = estado.Documentos.ObtenerPorIndice(i);
+                    Factura? dte = estado.Documentos.ObtenerPorIndice(i);
 
                     if (dte == null || !dte.Autorizada)
                     {
