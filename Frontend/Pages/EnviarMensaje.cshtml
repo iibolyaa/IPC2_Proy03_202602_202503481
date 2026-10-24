@@ -1,0 +1,153 @@
+@page
+@model Frontend.Pages.EnviarMensajeModel
+
+@{
+    ViewData["Title"] = "Enviar mensaje";
+}
+
+<section class="encabezado-pagina">
+    <h1>Enviar mensaje JSON</h1>
+    <p>
+        Selecciona un archivo para actualizar el
+        Registro Tributario Unificado o solicitar
+        autorizaciones de DTE.
+    </p>
+</section>
+
+<section class="panel">
+
+    <h2>Datos de la solicitud</h2>
+
+    <form method="post"
+          enctype="multipart/form-data">
+
+        <div asp-validation-summary="ModelOnly"
+             class="mensaje-error"></div>
+
+        <div class="formulario-grupo">
+            <label asp-for="TipoMensaje">
+                Tipo de mensaje
+            </label>
+
+            <select asp-for="TipoMensaje"
+                    class="campo"
+                    required>
+                <option value="rtu">
+                    Actualizar RTU
+                </option>
+
+                <option value="dte">
+                    Autorizar DTE
+                </option>
+            </select>
+        </div>
+
+        <div class="formulario-grupo">
+            <label asp-for="ArchivoJson">
+                Seleccionar archivo JSON
+            </label>
+
+            <input asp-for="ArchivoJson"
+                   type="file"
+                   accept=".json,application/json"
+                   class="campo"
+                   required />
+
+            <small class="texto-ayuda">
+                El archivo debe contener un arreglo
+                JSON. Tamaño máximo: 10 MB.
+            </small>
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit"
+                    class="boton boton-principal">
+                Enviar mensaje
+            </button>
+
+            <a asp-page="/EnviarMensaje"
+               class="boton boton-secundario">
+                Limpiar
+            </a>
+        </div>
+
+    </form>
+
+</section>
+
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <section class="mensaje-alerta mensaje-error"
+             role="alert">
+        <strong>No se pudo procesar la solicitud</strong>
+        <p>@Model.MensajeError</p>
+    </section>
+}
+
+@if (!string.IsNullOrEmpty(Model.MensajeExito))
+{
+    <section class="mensaje-alerta mensaje-exito"
+             role="status">
+        <strong>Solicitud atendida</strong>
+        <p>@Model.MensajeExito</p>
+    </section>
+}
+
+@if (!string.IsNullOrEmpty(Model.RespuestaJson))
+{
+    <section class="panel">
+        <h2>Respuesta del Backend</h2>
+
+        <p class="texto-ayuda">
+            Se muestra el mensaje JSON recibido
+            desde la API.
+        </p>
+
+        <div class="contenedor-json">
+            <pre><code>@Model.RespuestaJson</code></pre>
+        </div>
+    </section>
+}
+
+<section class="panel">
+    <h2>Formatos admitidos</h2>
+
+    <div class="formatos-grid">
+
+        <article class="formato-tarjeta">
+            <h3>Actualización de RTU</h3>
+            <p>
+                Archivo JSON con uno o varios
+                contribuyentes.
+            </p>
+
+            <pre>[
+  {
+    "NIT": "7378106",
+    "nombre": "Empresa ABC, S.A."
+  }
+]</pre>
+        </article>
+
+        <article class="formato-tarjeta">
+            <h3>Autorización de DTE</h3>
+            <p>
+                Archivo JSON con una o varias
+                solicitudes de autorización.
+            </p>
+
+            <pre>[
+  {
+    "TIEMPO": "Guatemala, 15/01/2025 15:25 hrs.",
+    "REFERENCIA": "A1990",
+    "NIT_EMISOR": "7378106",
+    "NIT_RECEPTOR": "8338817",
+    "VALOR": 100.00,
+    "IVA": 12.00,
+    "TOTAL": 112.00
+  }
+]</pre>
+        </article>
+
+    </div>
+</section>

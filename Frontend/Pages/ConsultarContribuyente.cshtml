@@ -1,0 +1,229 @@
+
+@page
+@model Frontend.Pages.ConsultarContribuyenteModel
+@using System.Text.Json
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Consultar contribuyente";
+}
+
+<section class="encabezado-pagina">
+    <h1>Consultar contribuyente</h1>
+
+    <p>
+        Consulta los Documentos Tributarios Electronicos
+        emitidos o recibidos por un contribuyente
+        dentro de un rango de fechas.
+    </p>
+</section>
+
+<section class="panel">
+
+    <h2>Filtros de consulta</h2>
+
+    <form method="post">
+
+        <div class="formulario-grupo">
+            <label asp-for="Nit">
+                NIT del contribuyente
+            </label>
+
+            <input asp-for="Nit"
+                   class="campo"
+                   placeholder="Ingrese el NIT"
+                   maxlength="21"
+                   required />
+        </div>
+
+        <div class="formulario-grupo">
+            <label asp-for="Tipo">
+                Tipo de documentos
+            </label>
+
+            <select asp-for="Tipo"
+                    class="campo"
+                    required>
+
+                <option value="emitidas">
+                    DTE emitidos
+                </option>
+
+                <option value="recibidas">
+                    DTE recibidos
+                </option>
+
+            </select>
+        </div>
+
+        <div class="consulta-fechas">
+
+            <div class="formulario-grupo">
+                <label asp-for="FechaInicio">
+                    Fecha inicial
+                </label>
+
+                <input asp-for="FechaInicio"
+                       type="date"
+                       asp-format="{0:yyyy-MM-dd}"
+                       class="campo"
+                       required />
+            </div>
+
+            <div class="formulario-grupo">
+                <label asp-for="FechaFin">
+                    Fecha final
+                </label>
+
+                <input asp-for="FechaFin"
+                       type="date"
+                       asp-format="{0:yyyy-MM-dd}"
+                       class="campo"
+                       required />
+            </div>
+
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit"
+                    class="boton boton-principal">
+                Consultar documentos
+            </button>
+
+            <a asp-page="/ConsultarContribuyente"
+               class="boton boton-secundario">
+                Limpiar
+            </a>
+        </div>
+
+    </form>
+
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+{
+    <section class="mensaje-alerta mensaje-error"
+             role="alert">
+
+        <strong>No se pudo realizar la consulta</strong>
+
+        <p>@Model.MensajeError</p>
+
+    </section>
+}
+
+@if (Model.MostrarResultados)
+{
+    <section class="resultados-consulta">
+
+        <div class="seccion-encabezado">
+            <h2>Resultados de la consulta</h2>
+
+            <p>
+                NIT: @Model.Nit —
+                @(Model.Tipo == "emitidas"
+                    ? "Documentos emitidos"
+                    : "Documentos recibidos")
+            </p>
+        </div>
+
+        <div class="resumen-tarjetas">
+
+            <article class="resumen-tarjeta">
+                <span>Documentos autorizados</span>
+
+                <strong>
+                    @Model.CantidadTotal
+                </strong>
+            </article>
+
+            <article class="resumen-tarjeta">
+                <span>Monto total facturado</span>
+
+                <strong>
+                    Q @Model.MontoTotal.ToString("N2")
+                </strong>
+            </article>
+
+        </div>
+
+        <section class="panel">
+
+            <h2>Detalle por fecha</h2>
+
+            <div class="tabla-contenedor">
+                <table class="tabla">
+
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cantidad de DTE</th>
+                            <th>Monto total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            using JsonDocument documento =
+                                JsonDocument.Parse(
+                                    Model.RespuestaJson
+                                );
+
+                            JsonElement detalle =
+                                documento.RootElement
+                                    .GetProperty("detalle");
+                        }
+
+                        @foreach (JsonElement registro
+                            in detalle.EnumerateArray())
+                        {
+                            string fecha =
+                                registro.GetProperty("fecha")
+                                    .GetString() ?? "";
+
+                            int cantidad =
+                                registro.GetProperty("cantidadDTE")
+                                    .GetInt32();
+
+                            decimal monto =
+                                registro.GetProperty("montoTotal")
+                                    .GetDecimal();
+
+                            <tr>
+                                <td>@fecha</td>
+                                <td>@cantidad</td>
+                                <td>Q @monto.ToString("N2")</td>
+                            </tr>
+                        }
+
+                        @if (Model.CantidadTotal == 0)
+                        {
+                            <tr>
+                                <td colspan="3"
+                                    class="sin-resultados">
+                                    No se encontraron DTE autorizados
+                                    para los filtros seleccionados.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th>Total del periodo</th>
+                            <th>@Model.CantidadTotal</th>
+                            <th>
+                                Q @Model.MontoTotal.ToString("N2")
+                            </th>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+
+        </section>
+
+    </section>
+}
