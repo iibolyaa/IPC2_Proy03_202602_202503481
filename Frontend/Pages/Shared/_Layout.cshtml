@@ -1,51 +1,110 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Frontend</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Frontend.styles.css" asp-append-version="true" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Sistema DTE</title>
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Frontend</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
+
+<body class="nuevo-diseno">
+
+    <div class="aplicacion-dte">
+
+        <!-- ENCABEZADO PRINCIPAL -->
+        <header class="encabezado-dte">
+
+            <div class="encabezado-informacion">
+                <div class="logo-dte">DTE</div>
+
+                <div>
+                    <strong>Sistema DTE</strong>
+                    <small>IPC2 - Proyecto 3</small>
                 </div>
             </div>
+
+            <!-- INICIO CENTRADO -->
+            <a asp-page="/Index"
+               class="boton-inicio">
+                Inicio
+            </a>
+
+            <div class="encabezado-universidad">
+                USAC
+            </div>
+
+        </header>
+
+        <!-- NAVEGACION PRINCIPAL -->
+        <nav class="navegacion-dte">
+
+            <a asp-page="/EnviarMensaje"
+               class="nav-boton">
+                Enviar mensaje
+            </a>
+
+            <a asp-page="/ConsultarContribuyente"
+               class="nav-boton">
+                Consultar contribuyente
+            </a>
+
+            <a asp-page="/ResumenIva"
+               class="nav-boton">
+                Resumen IVA
+            </a>
+
+            <a asp-page="/ResumenRango"
+               class="nav-boton">
+                Resumen por fechas
+            </a>
+
+            <a asp-page="/Graficas"
+               class="nav-boton">
+                Graficas
+            </a>
+
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+        <!-- CONTENIDO DE CADA PAGINA -->
+        <main class="contenido-dte">
             @RenderBody()
         </main>
+
+        <!-- ACCIONES INFERIORES -->
+        <footer class="acciones-inferiores">
+
+            <a asp-page="/Ayuda"
+               class="boton-ayuda">
+                Ayuda
+            </a>
+
+            <span class="texto-footer">
+                Universidad de San Carlos de Guatemala
+            </span>
+
+            <a asp-page="/Inicializar"
+               class="boton-inicializar">
+                Inicializar
+            </a>
+
+        </footer>
+
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Frontend - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false
+    )
 
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

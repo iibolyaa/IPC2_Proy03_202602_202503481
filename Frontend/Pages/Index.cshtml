@@ -1,10 +1,172 @@
 ﻿@page
 @model IndexModel
+
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="encabezado-pagina">
+    <div>
+        <h1>Panel principal</h1>
+        <p>
+            Bienvenido al Sistema de Autorizacion
+            de Documentos Tributarios Electronicos.
+        </p>
+    </div>
+</section>
+
+<section class="bienvenida">
+    <div>
+        <span class="etiqueta">IPC2 - Proyecto 3</span>
+
+        <h2>Administracion de DTE</h2>
+
+        <p>
+            Plataforma para gestionar contribuyentes
+            del Registro Tributario Unificado (RTU),
+            procesar solicitudes de autorizacion y
+            consultar informacion tributaria.
+        </p>
+
+        <a asp-page="/EnviarMensaje"
+           class="boton boton-blanco">
+            Enviar mensaje JSON
+        </a>
+    </div>
+
+    <div class="bienvenida-icono">
+        DTE
+    </div>
+</section>
+
+<section class="seccion">
+
+    <div class="seccion-encabezado">
+        <h2>Funcionalidades principales</h2>
+        <p>
+            Selecciona una opcion para continuar.
+        </p>
+    </div>
+
+    <div class="tarjetas">
+
+        <article class="tarjeta">
+            <div class="tarjeta-icono">01</div>
+
+            <h3>Enviar mensaje</h3>
+
+            <p>
+                Cargar archivos JSON para actualizar
+                contribuyentes o solicitar autorizaciones
+                de documentos DTE.
+            </p>
+
+            <a asp-page="/EnviarMensaje"
+               class="enlace-tarjeta">
+                Acceder
+            </a>
+        </article>
+
+        <article class="tarjeta">
+            <div class="tarjeta-icono">02</div>
+
+            <h3>Consultar contribuyente</h3>
+
+            <p>
+                Consultar documentos emitidos o recibidos
+                por NIT dentro de un rango de fechas.
+            </p>
+
+            <a asp-page="/ConsultarContribuyente"
+               class="enlace-tarjeta">
+                Acceder
+            </a>
+        </article>
+
+        <article class="tarjeta">
+            <div class="tarjeta-icono">03</div>
+
+            <h3>Resumen de IVA</h3>
+
+            <p>
+                Visualizar el IVA emitido y recibido
+                por cada contribuyente en una fecha.
+            </p>
+
+            <a asp-page="/ResumenIva"
+               class="enlace-tarjeta">
+                Acceder
+            </a>
+        </article>
+
+        <article class="tarjeta">
+            <div class="tarjeta-icono">04</div>
+
+            <h3>Resumen por fechas</h3>
+
+            <p>
+                Consultar montos autorizados por periodo,
+                incluyendo o excluyendo el IVA.
+            </p>
+
+            <a asp-page="/ResumenRango"
+               class="enlace-tarjeta">
+                Acceder
+            </a>
+        </article>
+
+        <article class="tarjeta">
+            <div class="tarjeta-icono">05</div>
+
+            <h3>Graficas y reportes</h3>
+
+            <p>
+                Representar los movimientos tributarios
+                mediante graficas y generar reportes PDF.
+            </p>
+
+            <a asp-page="/Graficas"
+               class="enlace-tarjeta">
+                Acceder
+            </a>
+        </article>
+
+        <article class="tarjeta">
+            <div class="tarjeta-icono">06</div>
+
+            <h3>Ayuda</h3>
+
+            <p>
+                Consultar la informacion del estudiante
+                y la documentacion del sistema.
+            </p>
+
+            <a asp-page="/Ayuda"
+               class="enlace-tarjeta">
+                Acceder
+            </a>
+        </article>
+
+    </div>
+
+</section>
+
+<section class="informacion-sistema">
+
+    <h2>Acerca del sistema</h2>
+
+    <p>
+        Este proyecto implementa una arquitectura
+        cliente-servidor utilizando ASP.NET Core,
+        Razor Pages, una API HTTP y persistencia
+        de datos mediante archivos.
+    </p>
+
+    <p>
+        La informacion es procesada utilizando
+        programacion orientada a objetos y
+        estructuras de datos implementadas
+        manualmente.
+    </p>
+
+</section>
